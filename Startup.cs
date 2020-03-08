@@ -43,7 +43,7 @@ namespace IdentityServer
             services.AddSession();
             services.AddAuthorization();
 
-            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+            var connectionString = Configuration["AzureConn"];// Configuration.GetConnectionString("DefaultConnection");
 
             services.AddDbContext<ApplicationDbContext>(builder =>
              builder.UseSqlServer(connectionString, sqlOptions => sqlOptions.MigrationsAssembly(migrationsAssembly)));
@@ -52,13 +52,13 @@ namespace IdentityServer
                 .AddConfigurationStore(options =>
                 {
                     options.ConfigureDbContext = b =>
-                        b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
+                        b.UseSqlServer(connectionString,
                             sql => sql.MigrationsAssembly(migrationsAssembly));
                 })
                 .AddOperationalStore(options =>
                 {
                     options.ConfigureDbContext = b =>
-                        b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
+                        b.UseSqlServer(connectionString,
                             sql => sql.MigrationsAssembly(migrationsAssembly));
 
                     // this enables automatic token cleanup. this is optional.
