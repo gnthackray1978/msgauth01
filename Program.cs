@@ -32,18 +32,18 @@ namespace IdentityServer
                         .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
                         .Enrich.FromLogContext();
 
-                    if (ctx.HostingEnvironment.IsDevelopment())
-                    {
+                    //if (ctx.HostingEnvironment.IsDevelopment())
+                    //{
                         config.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}");
-                    }
-                    else if (ctx.HostingEnvironment.IsProduction())
-                    {
-                        config.WriteTo.File(@"/identityserver.txt",
-                            fileSizeLimitBytes: 1_000_000,
-                            rollOnFileSizeLimit: true,
-                            shared: true,
-                            flushToDiskInterval: TimeSpan.FromSeconds(1));
-                    }
+                    //}
+                    //else if (ctx.HostingEnvironment.IsProduction())
+                    //{
+                    //    config.WriteTo.File(@"/identityserver.txt",
+                    //        fileSizeLimitBytes: 1_000_000,
+                    //        rollOnFileSizeLimit: true,
+                    //        shared: true,
+                    //        flushToDiskInterval: TimeSpan.FromSeconds(1));
+                    //}
                 })
                 .ConfigureAppConfiguration((ctx, builder) =>
                 {
