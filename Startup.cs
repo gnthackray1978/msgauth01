@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace IdentityServer
@@ -69,7 +70,11 @@ namespace IdentityServer
             }
             else
             {
-                throw new Exception("need to configure key material");
+                var key = Configuration["gntcert"];
+
+                var pfxBytes = Convert.FromBase64String(key);
+                var cert = new X509Certificate2(pfxBytes, (string)null, X509KeyStorageFlags.MachineKeySet);
+                builder.AddSigningCredential(cert);
             }
 
             services.AddAuthentication()

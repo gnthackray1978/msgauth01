@@ -1,12 +1,12 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-
-
-using Microsoft.AspNetCore;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Azure.KeyVault;
+using Microsoft.Azure.Services.AppAuthentication;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.AzureKeyVault;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
-using Serilog.Sinks.SystemConsole.Themes;
 using System;
 
 namespace IdentityServer
@@ -17,25 +17,47 @@ namespace IdentityServer
         {
             Console.Title = "IdentityServer4";
 
-            CreateWebHostBuilder(args).Build().Run();
+            BuildWebHostBuilder(args).Build().Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+        public static IHostBuilder BuildWebHostBuilder(string[] args)
         {
-            return WebHost.CreateDefaultBuilder(args)
-                    .UseStartup<Startup>();
+            return Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args)
+                .UseSerilog((ctx, config) =>
+                {
+                    config.MinimumLevel.Debug()
+                        .MinimumLevel.Debug()
+                        .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                        .MinimumLevel.Override("System", LogEventLevel.Warning)
+                        .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
+                        .Enrich.FromLogContext();
 
-        //            .UseSerilog((context, configuration) =>
-        //            {
-        //                configuration
-        //                    .MinimumLevel.Debug()
-        //                    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-        //                    .MinimumLevel.Override("System", LogEventLevel.Warning)
-        //                    .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
-        //                    .Enrich.FromLogContext()
-        //                    .WriteTo.File(@"identityserver4_log.txt")
-        //                    .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}", theme: AnsiConsoleTheme.Literate);
-        //            });
+                    if (ctx.HostingEnvironment.IsDevelopment())
+                    {
+                        config.WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}");
+                    }
+                    else if (ctx.HostingEnvironment.IsProduction())
+                    {
+                        config.WriteTo.File(@"D:\home\LogFiles\Application\identityserver.txt",
+                            fileSizeLimitBytes: 1_000_000,
+                            rollOnFileSizeLimit: true,
+                            shared: true,
+                            flushToDiskInterval: TimeSpan.FromSeconds(1));
+                    }
+                })
+                .ConfigureAppConfiguration((ctx, builder) =>
+                {
+                    var config = builder.Build();
+                    var tokenProvider = new AzureServiceTokenProvider();
+                    var kvClient = new KeyVaultClient((authority, resource, scope) => tokenProvider.KeyVaultTokenCallback(authority, resource, scope));
+
+                    builder.AddAzureKeyVault(config["KeyVault:BaseUrl"], kvClient, new DefaultKeyVaultSecretManager());
+                })
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
         }
+
     }
 }
