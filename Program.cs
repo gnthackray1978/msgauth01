@@ -38,7 +38,7 @@ namespace IdentityServer
                     }
                     else if (ctx.HostingEnvironment.IsProduction())
                     {
-                        config.WriteTo.File(@"D:\home\LogFiles\Application\identityserver.txt",
+                        config.WriteTo.File(@"/identityserver.txt",
                             fileSizeLimitBytes: 1_000_000,
                             rollOnFileSizeLimit: true,
                             shared: true,
