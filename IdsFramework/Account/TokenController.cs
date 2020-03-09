@@ -69,8 +69,8 @@ namespace IdentityServer.Quickstart.Account
 
         private RefreshToken GetAccessTokenDataFromRefreshToken(string refreshToken)
         {
-            var clientId = _configuration["ClientId"];
-            var clientSecret = _configuration["ClientSecret"];
+            var clientId = _configuration["GoogleClientId"];
+            var clientSecret = _configuration["GoogleClientSecret"];
 
             string Url = _configuration["GoogleTokenEndpoint"];
             string data = "client_id={0}&client_secret={1}&refresh_token={2}&grant_type=refresh_token";
@@ -180,8 +180,8 @@ namespace IdentityServer.Quickstart.Account
            
             var pairs = new Dictionary<string, string>()
                         { 
-                            { "client_id", _configuration["ClientId"] },
-                            { "client_secret", _configuration["ClientSecret"]  },
+                            { "client_id", _configuration["GoogleClientId"] },
+                            { "client_secret", _configuration["GoogleClientSecret"]  },
                             { "grant_type", "refresh_token" },
                             { "refresh_token", token.Refresh }
                         };

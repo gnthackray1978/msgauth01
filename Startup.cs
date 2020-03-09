@@ -38,12 +38,13 @@ namespace IdentityServer
         {
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
           
+            //services.AddSingleton()
             services.AddControllersWithViews();
             services.AddRazorPages().AddSessionStateTempDataProvider();             
             services.AddSession();
             services.AddAuthorization();
 
-            var connectionString = Configuration["AzureConn"];// Configuration.GetConnectionString("DefaultConnection");
+            var connectionString = Configuration["MSGGenDB01"];// Configuration.GetConnectionString("DefaultConnection");
 
             services.AddDbContext<ApplicationDbContext>(builder =>
              builder.UseSqlServer(connectionString, sqlOptions => sqlOptions.MigrationsAssembly(migrationsAssembly)));
@@ -71,7 +72,7 @@ namespace IdentityServer
             }
             else
             {
-                var key = Configuration["gntcert"];
+                var key = Configuration["MSGCert01"];
 
                 var pfxBytes = Convert.FromBase64String(key);
                 var cert = new X509Certificate2(pfxBytes, (string)null, X509KeyStorageFlags.MachineKeySet);
@@ -87,8 +88,8 @@ namespace IdentityServer
                     options.ClaimActions.MapJsonKey("urn:google:locale", "locale", "string");
                     options.ClaimActions.MapJsonKey("urn:google:email", "email", "string");
                     
-                    options.ClientId = Configuration["ClientId"];
-                    options.ClientSecret = Configuration["ClientSecret"];
+                    options.ClientId = Configuration["GoogleClientId"];
+                    options.ClientSecret = Configuration["GoogleClientSecret"];
 
                     options.Events.OnCreatingTicket = ctx =>
                     {
@@ -112,7 +113,7 @@ namespace IdentityServer
 
                 .AddJwtBearer("Bearer", options =>
                 {
-                    options.Authority = Configuration["IdentityServerAddress"];
+                    options.Authority = Configuration["AuthServerUrl"];
                     options.RequireHttpsMetadata = false;
                     options.Audience = "api1";
                 });
