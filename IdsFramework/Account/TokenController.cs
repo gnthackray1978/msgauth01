@@ -30,6 +30,7 @@ using System.Net;
 using System.Text;
 using System.IO;
 using Microsoft.Extensions.Configuration;
+using Api;
 
 namespace IdentityServer.Quickstart.Account
 {
@@ -45,7 +46,7 @@ namespace IdentityServer.Quickstart.Account
         private readonly IClientStore _clientStore;
         private readonly IEventService _events;
         private readonly IConfiguration _configuration;
-
+        private readonly IMSGConfigHelper _iMSGConfigHelper;
         public IDictionary<string, string> AuthProperties { get; set; }
 
         public TokenController(
@@ -53,13 +54,13 @@ namespace IdentityServer.Quickstart.Account
             IClientStore clientStore,
             IEventService events,
             ApplicationDbContext users,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IMSGConfigHelper iMSGConfigHelper)
         {
             // if the TestUserStore is not in DI, then we'll just use the global users collection
             // this is where you would plug in your own custom identity management library (e.g. ASP.NET Identity)
             _users = users;// ?? 
-
-            var t = new TestUserStore(TestUsers.Users);
+            _iMSGConfigHelper = iMSGConfigHelper;
             _interaction = interaction;
             _clientStore = clientStore;
             _events = events;
@@ -69,10 +70,10 @@ namespace IdentityServer.Quickstart.Account
 
         private RefreshToken GetAccessTokenDataFromRefreshToken(string refreshToken)
         {
-            var clientId = _configuration["GoogleClientId"];
-            var clientSecret = _configuration["GoogleClientSecret"];
+            var clientId = _iMSGConfigHelper.GoogleClientId;
+            var clientSecret = _iMSGConfigHelper.GoogleClientSecret;
 
-            string Url = _configuration["GoogleTokenEndpoint"];
+            string Url = _iMSGConfigHelper.GoogleTokenEndpoint;
             string data = "client_id={0}&client_secret={1}&refresh_token={2}&grant_type=refresh_token";
 
             HttpWebRequest request = HttpWebRequest.Create(Url) as HttpWebRequest;
@@ -177,11 +178,11 @@ namespace IdentityServer.Quickstart.Account
 
          
             var options = await Task.FromResult<OAuthOptions>(HttpContext.RequestServices.GetRequiredService<IOptionsMonitor<GoogleOptions>>().Get(GoogleDefaults.AuthenticationScheme));
-           
+
             var pairs = new Dictionary<string, string>()
-                        { 
-                            { "client_id", _configuration["GoogleClientId"] },
-                            { "client_secret", _configuration["GoogleClientSecret"]  },
+                        {
+                            { "client_id", _iMSGConfigHelper.GoogleClientId},
+                            { "client_secret", _iMSGConfigHelper.GoogleClientSecret  },
                             { "grant_type", "refresh_token" },
                             { "refresh_token", token.Refresh }
                         };

@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using Api;
 using IdentityServer.Data;
 using IdentityServer4;
 using IdentityServer4.EntityFramework.DbContexts;
@@ -44,7 +45,12 @@ namespace IdentityServer
             services.AddSession();
             services.AddAuthorization();
 
-            var connectionString = Configuration["MSGGenDB01"];// Configuration.GetConnectionString("DefaultConnection");
+            IMSGConfigHelper msgConfigHelper = new MSGConfigHelper(Configuration);
+
+            services.AddSingleton(msgConfigHelper);
+
+
+            var connectionString = msgConfigHelper.MSGGenDB01;
 
             services.AddDbContext<ApplicationDbContext>(builder =>
              builder.UseSqlServer(connectionString, sqlOptions => sqlOptions.MigrationsAssembly(migrationsAssembly)));
@@ -72,11 +78,12 @@ namespace IdentityServer
             }
             else
             {
-                var key = Configuration["MSGCert01"];
+                //var key = Configuration["MSGCert01"];
 
-                var pfxBytes = Convert.FromBase64String(key);
-                var cert = new X509Certificate2(pfxBytes, (string)null, X509KeyStorageFlags.MachineKeySet);
-                builder.AddSigningCredential(cert);
+                //var pfxBytes = Convert.FromBase64String(key);
+                //var cert = new X509Certificate2(pfxBytes, (string)null, X509KeyStorageFlags.MachineKeySet);
+              
+                builder.AddSigningCredential(msgConfigHelper.MSGCert01);
             }
 
             services.AddAuthentication()
@@ -87,9 +94,9 @@ namespace IdentityServer
                     options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
                     options.ClaimActions.MapJsonKey("urn:google:locale", "locale", "string");
                     options.ClaimActions.MapJsonKey("urn:google:email", "email", "string");
-                    
-                    options.ClientId = Configuration["GoogleClientId"];
-                    options.ClientSecret = Configuration["GoogleClientSecret"];
+
+                    options.ClientId = msgConfigHelper.GoogleClientId;// Configuration["GoogleClientId"];
+                    options.ClientSecret = msgConfigHelper.GoogleClientSecret;// Configuration["GoogleClientSecret"];
 
                     options.Events.OnCreatingTicket = ctx =>
                     {
@@ -113,7 +120,7 @@ namespace IdentityServer
 
                 .AddJwtBearer("Bearer", options =>
                 {
-                    options.Authority = Configuration["AuthServerUrl"];
+                    options.Authority = msgConfigHelper.AuthServerUrl;
                     options.RequireHttpsMetadata = false;
                     options.Audience = "api1";
                 });
