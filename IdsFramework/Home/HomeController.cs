@@ -27,16 +27,9 @@ namespace IdentityServer
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public ActionResult<string> Index()
         {
-            //if (_environment.IsDevelopment())
-            //{
-            //    // only show in development
-               return View();
-            //}
-
-            //_logger.LogInformation("Homepage is disabled in production. Returning 404.");
-            //return NotFound();
+            return new ActionResult<string>("MSG Auth Server Running");
         }
 
         /// <summary>
