@@ -163,7 +163,7 @@ namespace IdentityServer
             app.UseStaticFiles();
 
             app.UseIdentityServer();
-            app.UseAuthorization();
+            
             
         
 
@@ -174,6 +174,7 @@ namespace IdentityServer
  
 
             app.UseRouting();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
 
