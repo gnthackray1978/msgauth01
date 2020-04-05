@@ -124,36 +124,23 @@ namespace IdentityServer
                     options.RequireHttpsMetadata = false;
                     options.Audience = "api1";
                 });
-                
 
-            services.AddCors(options =>
+            services.AddCors(setup =>
             {
-                // this defines a CORS policy called "default"
-                options.AddPolicy("default", policy =>
+                setup.AddDefaultPolicy(policy =>
                 {
-                    // policy.WithOrigins(Configuration["ClientAddress"])
-                    policy.AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
+                    policy.AllowAnyHeader();
+                    policy.AllowAnyMethod();
+                    policy.WithOrigins(msgConfigHelper.TestClientUrl);
+                    policy.AllowCredentials();
                 });
             });
-             
+
         }
 
         public void Configure(IApplicationBuilder app)
-        {
-            // InitializeDatabase(app);
-            app.UseCors("default");
-             
+        {            
             app.UseAuthentication();
-
-
-
-            //app.Use(async (context, next) =>
-            //{
-            //    await next.Invoke();
-            //});
-
 
             if (Environment.IsDevelopment())
             {
@@ -163,9 +150,9 @@ namespace IdentityServer
             app.UseStaticFiles();
 
             app.UseIdentityServer();
-            
-            
-        
+
+            app.UseCors();
+
 
             app.UseCookiePolicy();
             app.UseSession(); // This must come before "UseMvc()"
