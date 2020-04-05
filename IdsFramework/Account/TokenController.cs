@@ -104,9 +104,6 @@ namespace IdentityServer.Quickstart.Account
         {
             ClaimsPrincipal currentUser = this.User;
 
-
-    
-
             var result = await HttpContext.AuthenticateAsync("Bearer");
             if (result?.Succeeded != true)
             {
@@ -134,6 +131,7 @@ namespace IdentityServer.Quickstart.Account
                 catch(Exception e)
                 {
                     Debug.WriteLine(e.Message);
+                    throw e;
                 }
               
             }
@@ -150,7 +148,10 @@ namespace IdentityServer.Quickstart.Account
 
 
         }
-         
+        [Route("test")]
+        public async Task<IActionResult> Test() {
+            return new JsonResult("test");
+        }
 
         [Route("refresh")]
         public async Task<IActionResult> Refresh()
