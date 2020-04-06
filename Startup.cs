@@ -140,29 +140,27 @@ namespace IdentityServer
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseAuthentication();
-            app.UseAuthorization();
-
+            app.UseCookiePolicy();
+            app.UseSerilogRequestLogging();
+            app.UseCors("api");
             if (Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseRouting();
 
-            app.UseCors("api");
-
+            app.UseAuthentication();
+            app.UseAuthorization();
+             
             app.UseStaticFiles();
 
             app.UseIdentityServer();
-          
-            app.UseSerilogRequestLogging();
-            app.UseCookiePolicy();
+           
             app.UseSession(); // This must come before "UseMvc()"
                               //  app.UseHttpContextItemsMiddleware();
 
- 
-
-            app.UseRouting();
+            
             
             app.UseEndpoints(endpoints =>
             {
