@@ -21,6 +21,7 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace IdentityServer
 {
@@ -127,14 +128,11 @@ namespace IdentityServer
                     options.Audience = "api1";
                 });
 
-            services.AddCors(setup =>
+            services.AddCors(options =>
             {
-                setup.AddDefaultPolicy(policy =>
+                options.AddPolicy("api", policy =>
                 {
-                    policy.AllowAnyHeader();
-                    policy.AllowAnyMethod();
-                    policy.WithOrigins(msgConfigHelper.TestClientUrl);
-                    policy.AllowCredentials();
+                    policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
                 });
             });
 
@@ -142,11 +140,6 @@ namespace IdentityServer
 
         public void Configure(IApplicationBuilder app)
         {
-
-            app.UseCors();
-
-            
-
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -155,10 +148,14 @@ namespace IdentityServer
                 app.UseDeveloperExceptionPage();
             }
 
+
+            app.UseCors("api");
+
             app.UseStaticFiles();
 
             app.UseIdentityServer();
-
+          
+            app.UseSerilogRequestLogging();
             app.UseCookiePolicy();
             app.UseSession(); // This must come before "UseMvc()"
                               //  app.UseHttpContextItemsMiddleware();
