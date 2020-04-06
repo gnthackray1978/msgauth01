@@ -75,19 +75,19 @@ namespace IdentityServer
                     options.EnableTokenCleanup = true;
                 });
           
-            if (Environment.IsDevelopment())
-            {
-                builder.AddDeveloperSigningCredential();
-            }
-            else
-            {
+            //if (Environment.IsDevelopment())
+            //{
+            //    builder.AddDeveloperSigningCredential();
+            //}
+            //else
+            //{
                 //var key = Configuration["MSGCert01"];
 
                 //var pfxBytes = Convert.FromBase64String(key);
                 //var cert = new X509Certificate2(pfxBytes, (string)null, X509KeyStorageFlags.MachineKeySet);
               
                 builder.AddSigningCredential(msgConfigHelper.MSGCert01);
-            }
+            //}
 
             services.AddAuthentication()
                 .AddGoogle("Google", options =>

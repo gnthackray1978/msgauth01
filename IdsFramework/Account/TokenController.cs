@@ -32,13 +32,15 @@ using System.IO;
 using Microsoft.Extensions.Configuration;
 using Api;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+//using System.Web.Http;
 
 namespace IdentityServer.Quickstart.Account
 {
     
 
     [Route("token")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [SecurityHeaders]
     public class TokenController : ControllerBase
     {
