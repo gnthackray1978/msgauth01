@@ -139,9 +139,11 @@ namespace IdentityServer
         }
 
         public void Configure(IApplicationBuilder app)
-        {            
-            app.UseAuthentication();
+        {
 
+            app.UseCors();
+
+            app.UseAuthentication();
             if (Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -151,8 +153,9 @@ namespace IdentityServer
 
             app.UseIdentityServer();
 
-            app.UseCors();
+            
 
+            
 
             app.UseCookiePolicy();
             app.UseSession(); // This must come before "UseMvc()"
