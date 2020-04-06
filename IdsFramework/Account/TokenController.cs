@@ -156,11 +156,7 @@ namespace IdentityServer.Quickstart.Account
 
 
         }
-        [Route("test")]
-        public async Task<IActionResult> Test() {
-            return new JsonResult("test");
-        }
-
+        
         [Route("refresh")]
         public async Task<IActionResult> Refresh()
         {
