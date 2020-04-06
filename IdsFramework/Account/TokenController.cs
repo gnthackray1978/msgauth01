@@ -31,6 +31,7 @@ using System.Text;
 using System.IO;
 using Microsoft.Extensions.Configuration;
 using Api;
+using Microsoft.Extensions.Logging;
 
 namespace IdentityServer.Quickstart.Account
 {
@@ -46,6 +47,7 @@ namespace IdentityServer.Quickstart.Account
         private readonly IClientStore _clientStore;
         private readonly IEventService _events;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<TokenController> _logger;
         private readonly IMSGConfigHelper _iMSGConfigHelper;
         public IDictionary<string, string> AuthProperties { get; set; }
 
@@ -55,7 +57,8 @@ namespace IdentityServer.Quickstart.Account
             IEventService events,
             ApplicationDbContext users,
             IConfiguration configuration,
-            IMSGConfigHelper iMSGConfigHelper)
+            IMSGConfigHelper iMSGConfigHelper,
+            ILogger<TokenController> logger)
         {
             // if the TestUserStore is not in DI, then we'll just use the global users collection
             // this is where you would plug in your own custom identity management library (e.g. ASP.NET Identity)
@@ -65,7 +68,7 @@ namespace IdentityServer.Quickstart.Account
             _clientStore = clientStore;
             _events = events;
             _configuration = configuration;
-
+            _logger = logger;
         }
 
         private RefreshToken GetAccessTokenDataFromRefreshToken(string refreshToken)
@@ -104,9 +107,12 @@ namespace IdentityServer.Quickstart.Account
         {
             ClaimsPrincipal currentUser = this.User;
 
+            _logger.LogDebug("token endpoint reached");
+
             var result = await HttpContext.AuthenticateAsync("Bearer");
             if (result?.Succeeded != true)
             {
+                _logger.LogDebug("token authentication failed");
                 throw new Exception("External authentication error");
             }
 

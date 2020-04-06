@@ -59,7 +59,7 @@ namespace Api
 
              AuthServerUrl = configuration["AuthServerUrl"];
 
-          //  AuthServerUrl = "http://localhost:5000";
+            //AuthServerUrl = "http://localhost:5000";
 
             MSGApiGenUrl = configuration["MSGApiGenUrl"];
 

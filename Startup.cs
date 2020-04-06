@@ -55,7 +55,9 @@ namespace IdentityServer
             services.AddDbContext<ApplicationDbContext>(builder =>
              builder.UseSqlServer(connectionString, sqlOptions => sqlOptions.MigrationsAssembly(migrationsAssembly)));
 
-            var builder = services.AddIdentityServer(o=>o.Cors.CorsPaths.Add(new Microsoft.AspNetCore.Http.PathString("/token")))
+            var builder = services.AddIdentityServer(
+                o=>o.Cors.CorsPaths.Add(new Microsoft.AspNetCore.Http.PathString("/token"))
+                )
                 .AddConfigurationStore(options =>
                 {
                     options.ConfigureDbContext = b =>
@@ -143,7 +145,11 @@ namespace IdentityServer
 
             app.UseCors();
 
+            
+
             app.UseAuthentication();
+            app.UseAuthorization();
+
             if (Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -153,10 +159,6 @@ namespace IdentityServer
 
             app.UseIdentityServer();
 
-            
-
-            
-
             app.UseCookiePolicy();
             app.UseSession(); // This must come before "UseMvc()"
                               //  app.UseHttpContextItemsMiddleware();
@@ -164,7 +166,7 @@ namespace IdentityServer
  
 
             app.UseRouting();
-            app.UseAuthorization();
+            
             app.UseEndpoints(endpoints =>
             {
 
