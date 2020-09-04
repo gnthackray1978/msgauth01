@@ -270,7 +270,8 @@ namespace Host.Quickstart.Account
                     googleSignInData.Surname = c.Value;
                 }
 
-                if (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")
+                if (c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+                    || c.Type == "urn:google:email")
                 {
                     localClaims.Add(new Claim(JwtClaimTypes.Email, c.Value));
                     googleSignInData.Email = c.Value;
