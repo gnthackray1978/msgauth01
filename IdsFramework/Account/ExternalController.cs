@@ -288,6 +288,9 @@ namespace Host.Quickstart.Account
                     localClaims.Add(new Claim(JwtClaimTypes.Locale, c.Value));
                     googleSignInData.Locale = c.Value;
                 }
+
+                localClaims.Add(new Claim(JwtClaimTypes.Role, "monkey"));
+
             }
 
             var sid = externalResult.Principal.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.SessionId);
